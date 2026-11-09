@@ -30,6 +30,18 @@ jobs:
         path: Build/WinMergeDownloadDeps
         key: WinMergeDownloadDeps
 
+    - name: Pre-download msys2 packages (mirror.msys2.org often rejects the PowerShell downloads in DownloadDeps.cmd)
+      shell: bash
+      run: |
+        mkdir -p build/WinMergeDownloadDeps
+        for u in $(grep -oE 'https://mirror\.msys2\.org/[^!]+' DownloadDeps.cmd); do
+          f="build/WinMergeDownloadDeps/$(basename "$u")"
+          [ -s "$f" ] && continue
+          curl -fsSL --retry 5 --retry-delay 3 -o "$f" "$u" ||
+            curl -fsSL --retry 5 --retry-delay 3 -o "$f" "${u/mirror.msys2.org/repo.msys2.org}"
+        done
+        ls -la build/WinMergeDownloadDeps
+
     - name: Build
       run: |
         .\DownloadDeps.cmd
@@ -40,9 +52,11 @@ jobs:
       with:
         name: WinMerge-x64.zip
         path: Build/Releases/*.zip
+        if-no-files-found: error
 
     - name: Upload installer
       uses: actions/upload-artifact@v4
       with:
         name: WinMerge-x64-Setup-x64.exe
         path: Build/Releases/*.exe
+        if-no-files-found: error
