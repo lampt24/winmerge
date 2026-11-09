@@ -3166,8 +3166,9 @@ BOOL CMainFrame::CreateToolbar()
 	LoadToolbarImages();
 	UpdateToolbar();
 
-	m_wndReBar.AddBar(&m_wndMenuBar);
-	m_wndReBar.AddBar(&m_wndToolBar, nullptr, nullptr, RBBS_GRIPPERALWAYS | RBBS_FIXEDBMP | RBBS_BREAK);
+	// Flat Fluent-style command area: no band grippers.
+	m_wndReBar.AddBar(&m_wndMenuBar, nullptr, nullptr, RBBS_NOGRIPPER | RBBS_FIXEDBMP);
+	m_wndReBar.AddBar(&m_wndToolBar, nullptr, nullptr, RBBS_NOGRIPPER | RBBS_FIXEDBMP | RBBS_BREAK);
 
 	if (!GetOptionsMgr()->GetBool(OPT_SHOW_TOOLBAR))
 	{

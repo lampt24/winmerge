@@ -22,6 +22,7 @@ public:
 		, m_nDraggingTabItemIndex(-1)
 		, m_bInSelchange(false)
 		, m_nTooltipTabItemIndex(-1)
+		, m_nHotItem(-1)
 		, m_bOnTitleBar(false)
 		, m_bActive(false)
 	{}
@@ -36,6 +37,7 @@ protected:
 	CRect m_rcCurrentCloseButtom;
 	int   m_nDraggingTabItemIndex;
 	int   m_nTooltipTabItemIndex;	/**< Index of the tab displaying tooltip */
+	int   m_nHotItem;				/**< Index of the tab under the pointer, -1 if none */
 	CMDIFrameWnd *m_pMainFrame;
 	CToolTipCtrl m_tooltips;		/**< Tooltip for the tab */
 
@@ -83,6 +85,7 @@ protected:
 	void SwapTabs(int nIndexA, int nIndexB);
 	int GetMaxTitleLength() const;
 	void UpdateToolTips(int index);
+	void SetHotItem(int nItem);
 };
 
 /**

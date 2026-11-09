@@ -344,9 +344,11 @@ COLORREF CTitleBarHelper::GetBackColor(bool bActive)
 {
 	if (!CAccentColor::Get().GetColorPrevalence())
 	{
+		// Neutral Fluent (Mica-like) surface: a touch lighter than the face color when active.
 		const COLORREF clr = GetSysColor(COLOR_3DFACE);
+		auto lift = [](int c) { return std::clamp(c + 3, 0, 255); };
 		const COLORREF bgclr = bActive ?
-			RGB(GetRValue(clr), std::clamp(GetGValue(clr) + 8, 0, 255), std::clamp(GetBValue(clr) + 8, 0, 255))
+			RGB(lift(GetRValue(clr)), lift(GetGValue(clr)), lift(GetBValue(clr)))
 			: clr;
 		return bgclr;
 	}

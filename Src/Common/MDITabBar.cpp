@@ -382,6 +382,52 @@ void CMyTabCtrl::OnMButtonDown(UINT nFlags, CPoint point)
 	pMDIChild->SendMessage(WM_SYSCOMMAND, SC_CLOSE);
 }
 
+/** @brief Mix two colors; ratio is the weight of @p a (0..1). */
+static COLORREF BlendColor(COLORREF a, COLORREF b, float ratio)
+{
+	auto mix = [ratio](int x, int y) { return static_cast<BYTE>(std::clamp(static_cast<int>(x * ratio + y * (1.f - ratio) + 0.5f), 0, 255)); };
+	return RGB(mix(GetRValue(a), GetRValue(b)), mix(GetGValue(a), GetGValue(b)), mix(GetBValue(a), GetBValue(b)));
+}
+
+static bool IsDarkColor(COLORREF clr)
+{
+	return (GetRValue(clr) * 299 + GetGValue(clr) * 587 + GetBValue(clr) * 114) / 1000 < 128;
+}
+
+/** @brief Fluent accent used for the selected-tab indicator (same palette as QuadPane). */
+static COLORREF GetTabAccentColor(COLORREF background)
+{
+	return IsDarkColor(background) ? RGB(0x4C, 0xC2, 0xFF) : RGB(0x00, 0x67, 0xC0);
+}
+
+/** @brief Background of the selected tab: the window color, kept distinguishable from the bar. */
+static COLORREF GetSelectedTabColor(COLORREF background)
+{
+	COLORREF clr = GetSysColor(COLOR_WINDOW);
+	const int diff = std::abs(GetRValue(clr) - GetRValue(background)) + std::abs(GetGValue(clr) - GetGValue(background)) + std::abs(GetBValue(clr) - GetBValue(background));
+	if (diff < 24)
+		clr = BlendColor(RGB(255, 255, 255), background, IsDarkColor(background) ? 0.08f : 0.7f);
+	return clr;
+}
+
+/** @brief Thin Fluent-style close glyph with a rounded hover/pressed background. */
+static void DrawTabCloseButton(HDC hdc, const CRect& rc, bool hot, bool pressed, COLORREF textColor, COLORREF background, int radius)
+{
+	if (hot)
+		DrawRoundedRect(hdc, rc.left, rc.top, rc.Width(), rc.Height(), radius,
+			BlendColor(textColor, background, pressed ? 0.18f : 0.10f), background);
+	Gdiplus::Graphics graphics(hdc);
+	graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+	Gdiplus::Color color;
+	color.SetFromCOLORREF(hot ? textColor : BlendColor(textColor, background, 0.75f));
+	const Gdiplus::REAL width = (std::max)(1.f, rc.Width() / 14.f);
+	Gdiplus::Pen pen(color, width);
+	const Gdiplus::REAL inset = rc.Width() * 0.32f;
+	const Gdiplus::REAL l = rc.left + inset, t = rc.top + inset, r = rc.right - inset - 1, b = rc.bottom - inset - 1;
+	graphics.DrawLine(&pen, l, t, r, b);
+	graphics.DrawLine(&pen, r, t, l, b);
+}
+
 void CMyTabCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
 	TCHAR            szBuf[256];
@@ -399,29 +445,49 @@ void CMyTabCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	const int pd = pointToPixel(RR_PADDING);
 	const int sw = pointToPixel(RR_SHADOWWIDTH);
 
+	const bool bHighContrast = IsHighContrastEnabled();
+	const COLORREF clrBack = GetBackColor();
+	const bool bSelected = (lpDraw->itemState & ODS_SELECTED) != 0;
+	const bool bHot = !bSelected && static_cast<UINT>(m_nHotItem) == lpDraw->itemID && m_nDraggingTabItemIndex < 0;
+	COLORREF clrItemBack = clrBack;
+	COLORREF clrText = m_bOnTitleBar ? CTitleBarHelper::GetTextColor(m_bActive) : GetSysColor(COLOR_BTNTEXT);
+
 	CRect rc = lpDraw->rcItem;
-	if (lpDraw->itemState & ODS_SELECTED)
+	const CRect rcTab(rc.left + sw, rc.top + sw - 1, rc.right - sw, rc.bottom - sw + 1);
+	if (bSelected && bHighContrast)
 	{
-		const COLORREF clrShadow = CEColor::GetIntermediateColor(GetSysColor(COLOR_3DSHADOW), GetBackColor(), 0.5f);
-		if (IsHighContrastEnabled())
-		{
-			DrawRoundedRectWithShadow(lpDraw->hDC, rc.left + sw, rc.top + sw - 1, rc.Width() - sw * 2, rc.Height() - rc.top - sw * 2 + 2, r, sw,
-				GetSysColor(COLOR_HIGHLIGHT), clrShadow, GetBackColor());
-			SetTextColor(lpDraw->hDC, GetSysColor(COLOR_HIGHLIGHTTEXT));
-		}
-		else
-		{
-			DrawRoundedRectWithShadow(lpDraw->hDC, rc.left + sw, rc.top + sw - 1, rc.Width() - sw * 2, rc.Height() - sw * 2 + 2, r, sw,
-				GetSysColor(COLOR_3DHIGHLIGHT), clrShadow, GetBackColor());
-			SetTextColor(lpDraw->hDC, getTextColor());
-		}
+		const COLORREF clrShadow = CEColor::GetIntermediateColor(GetSysColor(COLOR_3DSHADOW), clrBack, 0.5f);
+		DrawRoundedRectWithShadow(lpDraw->hDC, rc.left + sw, rc.top + sw - 1, rc.Width() - sw * 2, rc.Height() - rc.top - sw * 2 + 2, r, sw,
+			GetSysColor(COLOR_HIGHLIGHT), clrShadow, clrBack);
+		clrItemBack = GetSysColor(COLOR_HIGHLIGHT);
+		clrText = GetSysColor(COLOR_HIGHLIGHTTEXT);
 	}
-	else
+	else if (bSelected)
 	{
-		const COLORREF txtclr = m_bOnTitleBar ?
-			CTitleBarHelper::GetTextColor(m_bActive) : GetSysColor(COLOR_BTNTEXT);
-		SetTextColor(lpDraw->hDC, txtclr);
+		// Fluent: the selected tab is a raised card in the window color with a short accent bar.
+		clrItemBack = GetSelectedTabColor(clrBack);
+		const COLORREF clrBorder = BlendColor(clrText, clrBack, IsDarkColor(clrBack) ? 0.16f : 0.12f);
+		DrawRoundedRect(lpDraw->hDC, rcTab.left, rcTab.top, rcTab.Width(), rcTab.Height(), r + 1, clrBorder, clrBack);
+		DrawRoundedRect(lpDraw->hDC, rcTab.left + 1, rcTab.top + 1, rcTab.Width() - 2, rcTab.Height() - 2, r, clrItemBack, clrBorder);
+		clrText = getTextColor();
+		const int barHeight = (std::max)(2, pointToPixel(2) - 1);
+		const int barWidth = (std::min)(rcTab.Width() / 3, pointToPixel(14));
+		const int barLeft = rcTab.left + (rcTab.Width() - barWidth) / 2;
+		DrawRoundedRect(lpDraw->hDC, barLeft, rcTab.bottom - barHeight - 2, barWidth, barHeight, barHeight / 2,
+			GetTabAccentColor(clrItemBack), clrItemBack);
 	}
+	else if (bHot && !bHighContrast)
+	{
+		clrItemBack = BlendColor(clrText, clrBack, 0.07f);
+		DrawRoundedRect(lpDraw->hDC, rcTab.left, rcTab.top, rcTab.Width(), rcTab.Height(), r, clrItemBack, clrBack);
+	}
+	else if (!bHighContrast)
+	{
+		// Unselected tabs read as secondary text.
+		clrText = BlendColor(clrText, clrBack, 0.8f);
+	}
+	SetTextColor(lpDraw->hDC, clrText);
+
 	CSize iconsize(determineIconSize(), determineIconSize());
 	rc.left += sw + pd + iconsize.cx;
 	SetBkMode(lpDraw->hDC, TRANSPARENT);
@@ -436,7 +502,7 @@ void CMyTabCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	}
 	rc.left += pd;
 	rc.right -= pd;
-	DrawText(lpDraw->hDC, szBuf, -1, &rc, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+	DrawText(lpDraw->hDC, szBuf, -1, &rc, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
 
 	int nItem = GetItemIndexFromPoint(m_rcCurrentCloseButtom.CenterPoint());
 	if (static_cast<UINT>(nItem) == lpDraw->itemID)
@@ -445,15 +511,37 @@ void CMyTabCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		GetCursorPos(&pt);
 		ScreenToClient(&pt);
 		CRect rc1 = GetCloseButtonRect(nItem);
-		DrawFrameControl(lpDraw->hDC, &rc1, DFC_CAPTION, 
-			DFCS_CAPTIONCLOSE | DFCS_FLAT | (rc1.PtInRect(pt) ? DFCS_HOT : 0) |
-			((m_bCloseButtonDown && rc1.PtInRect(pt)) ? DFCS_PUSHED : 0));
+		const bool bCloseHot = !!rc1.PtInRect(pt);
+		if (bHighContrast)
+		{
+			DrawFrameControl(lpDraw->hDC, &rc1, DFC_CAPTION,
+				DFCS_CAPTIONCLOSE | DFCS_FLAT | (bCloseHot ? DFCS_HOT : 0) |
+				((m_bCloseButtonDown && bCloseHot) ? DFCS_PUSHED : 0));
+		}
+		else
+		{
+			DrawTabCloseButton(lpDraw->hDC, rc1, bCloseHot, m_bCloseButtonDown && bCloseHot, clrText, clrItemBack, r);
+		}
 	}
+}
+
+/** @brief Repaint the old and new hot tab when the pointer moves between tabs. */
+void CMyTabCtrl::SetHotItem(int nItem)
+{
+	if (nItem == m_nHotItem)
+		return;
+	CRect rc;
+	if (m_nHotItem >= 0 && m_nHotItem < GetItemCount() && GetItemRect(m_nHotItem, &rc))
+		InvalidateRect(&rc);
+	m_nHotItem = nItem;
+	if (m_nHotItem >= 0 && GetItemRect(m_nHotItem, &rc))
+		InvalidateRect(&rc);
 }
 
 void CMyTabCtrl::OnMouseMove(UINT nFlags, CPoint point)
 {
 	int nTabItemIndex = GetItemIndexFromPoint(point);
+	SetHotItem(nTabItemIndex);
 	CRect rc = GetCloseButtonRect(nTabItemIndex);
 	if (rc != m_rcCurrentCloseButtom)
 	{
@@ -498,6 +586,7 @@ void CMyTabCtrl::OnMouseLeave()
 	InvalidateRect(&m_rcCurrentCloseButtom);
 	m_rcCurrentCloseButtom = CRect();
 	m_bCloseButtonDown = false;
+	SetHotItem(-1);
 }
 
 void CMyTabCtrl::OnLButtonDown(UINT nFlags, CPoint point)
