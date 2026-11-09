@@ -51,6 +51,8 @@
 #include "MyFontDialog.h"
 #include "paths.h"
 #include "Environment.h"
+#include "PullRequestDlg.h"
+#include "PullRequestCompare.h"
 #include "PatchTool.h"
 #include "DirActions.h"
 #include "Plugins.h"
@@ -118,6 +120,7 @@ DocClass * GetMergeDocForDiff(CMultiDocTemplate *pTemplate, IDirDoc *pDirDoc, in
  */
 const CMainFrame::MENUITEM_ICON CMainFrame::m_MenuIcons[] = {
 	{ ID_FILE_OPENCONFLICT,			IDB_FILE_OPENCONFLICT,			CMainFrame::MENU_ALL },
+	{ ID_FILE_COMPARE_PR,			IDB_FILE_COMPARE_PR,			CMainFrame::MENU_ALL },
 	{ ID_FILE_NEW,					IDB_FILE_NEW,					CMainFrame::MENU_ALL },
 	{ ID_FILE_NEW_TABLE,			IDB_FILE_NEW_TABLE,				CMainFrame::MENU_ALL },
 	{ ID_FILE_NEW_HEX,				IDB_FILE_NEW_HEX,				CMainFrame::MENU_ALL },
@@ -298,6 +301,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 	ON_COMMAND(ID_FILE_SAVEPROJECT, OnSaveProject)
 	ON_COMMAND(ID_FILE_OPENCONFLICT, OnFileOpenConflict)
 	ON_COMMAND(ID_FILE_OPENCLIPBOARD, OnFileOpenClipboard)
+	ON_COMMAND(ID_FILE_COMPARE_PR, OnFileComparePullRequest)
 	ON_COMMAND(ID_EDIT_PASTE, OnFileOpenClipboard)
 	ON_COMMAND_RANGE(ID_MRU_FIRST, ID_MRU_LAST, OnMRUs)
 	ON_UPDATE_COMMAND_UI(ID_MRU_FIRST, OnUpdateNoMRUs)
@@ -3485,6 +3489,65 @@ void CMainFrame::OnFileOpenConflict()
 	{
 		DoOpenConflict(conflictFile);
 	}
+}
+
+/**
+ * @brief Called when user selects File/Compare Pull Request.
+ * Downloads the changed files of a GitHub/Gitea pull request at its base and
+ * head commits into a temporary folder and opens a read-only folder compare.
+ */
+void CMainFrame::OnFileComparePullRequest()
+{
+	CPullRequestDlg dlg(this);
+	if (dlg.DoModal() != IDOK)
+		return;
+
+	const PullRequest::Address address = dlg.m_address;
+	const String token = dlg.ResolveToken();
+	const String root = env::GetTempChildPath();
+	PullRequest::Snapshot snapshot;
+	String error;
+	bool ok = false;
+	{
+		CWaitCursor wait;
+		ok = PullRequest::Download(address, token, root, snapshot, error, [this](const String& message)
+			{
+				SetMessageText(message.c_str());
+				if (CWnd* pBar = GetMessageBar())
+					pBar->UpdateWindow();
+			});
+		SetMessageText(AFX_IDS_IDLEMESSAGE);
+	}
+	if (!ok)
+	{
+		AfxMessageBox(error.c_str(), MB_ICONSTOP);
+		return;
+	}
+	if (snapshot.fileCount == 0)
+	{
+		AfxMessageBox(_("This pull request has no changed files.").c_str(), MB_ICONINFORMATION);
+		return;
+	}
+	if (!snapshot.warnings.empty())
+	{
+		String message = strutils::format(_("%d file(s) could not be downloaded:"), static_cast<int>(snapshot.warnings.size()));
+		const size_t shown = (std::min)(snapshot.warnings.size(), static_cast<size_t>(12));
+		for (size_t i = 0; i < shown; ++i)
+			message += _T("\n") + snapshot.warnings[i];
+		if (shown < snapshot.warnings.size())
+			message += _T("\n...");
+		AfxMessageBox(message.c_str(), MB_ICONWARNING);
+	}
+
+	auto shortSha = [](const String& sha) { return sha.substr(0, (std::min)(sha.size(), static_cast<size_t>(7))); };
+	const String title = snapshot.title.empty() ? String() : _T(" - ") + snapshot.title;
+	String strDesc[3];
+	strDesc[0] = strutils::format(_T("PR #%d base: %s @ %s%s"), address.number, snapshot.baseRef, shortSha(snapshot.baseSha), title);
+	strDesc[1] = strutils::format(_T("PR #%d head: %s @ %s%s"), address.number, snapshot.headRef, shortSha(snapshot.headSha), title);
+	fileopenflags_t dwFlags[3] = { FFILEOPEN_READONLY | FFILEOPEN_NOMRU, FFILEOPEN_READONLY | FFILEOPEN_NOMRU, 0 };
+	PathContext paths(snapshot.basePath, snapshot.headPath);
+	OpenFolderParams openParams(true);
+	DoFileOrFolderOpen(&paths, dwFlags, strDesc, _T(""), nullptr, nullptr, nullptr, 0, &openParams);
 }
 
 /**

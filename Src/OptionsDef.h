@@ -301,6 +301,11 @@ inline const String OPT_CMP_BIN_SPLITTER_RATIOS {_T("Settings/BinarySplitterRati
 // Table options
 inline const String OPT_CMP_CSV_FILEPATTERNS {_T("Settings/CSVFilePatterns"s)};
 inline const String OPT_CMP_CSV_DELIM_CHAR   {_T("Settings/CSVDelimiterCharacter"s)};
+
+// Pull request compare
+inline const String OPT_PR_LAST_URL {_T("Settings/PullRequestLastUrl"s)};
+inline const String OPT_PR_TOKEN_GITHUB {_T("Settings/PullRequestTokenGitHub"s)}; /**< DPAPI-protected */
+inline const String OPT_PR_TOKEN_GITEA {_T("Settings/PullRequestTokenGitea"s)}; /**< DPAPI-protected */
 inline const String OPT_CMP_TSV_FILEPATTERNS {_T("Settings/TSVFilePatterns"s)};
 inline const String OPT_CMP_DSV_FILEPATTERNS {_T("Settings/DSVFilePatterns"s)};
 inline const String OPT_CMP_DSV_DELIM_CHAR   {_T("Settings/DSVDelimiterCharacter"s)};

@@ -23,7 +23,7 @@ Use `--out <dir>` to write somewhere else instead of `Src/res`.
 | Output (in `Src/res`) | Format | Used by |
 |---|---|---|
 | `ToolbarEnabled32.png` | 29 cells of 64 x 62, RGBA | main toolbar, order = `g_toolbarImageOrder` in `Src/ToolbarButtons.cpp` |
-| `*.bmp` (99 files listed in `Merge2.rc`) | 16 x 15, 24-bit, magenta color key | menu item images (BCMenu) |
+| `*.bmp` (100 files listed in `Merge2.rc`) | 16 x 15, 24-bit, magenta color key | menu item images (BCMenu) |
 | `mg_icons.png` / `mg_icons.bmp` | 16 cells of 12 x 12 | editor margin: execution, breakpoints, bookmarks 1–9/0, wrap |
 | folder-compare `*.ico` (39 files) | 16/24/32/48 px | DirView status column, compare statistics, filters |
 | `Merge.ico`, `MergeDoc.ico`, `MergeDir.ico`, `MergeProject.ico` | 16–256 px | app, document types; also copied to `ShellExtension/Resources` |

@@ -74,6 +74,7 @@
 #define IDD_SELECT_FILES_OR_FOLDERS     247
 #define IDD_DIALOG_WINDOWSMANAGER       250
 #define IDD_OPEN_TABLE                  251
+#define IDD_PULL_REQUEST                331
 #define IDD_FILTERS_FILEFILTERS         253
 #define IDD_FILTERS_LINEFILTERS         254
 #define IDD_FILTERS_SUBSTITUTIONFILTERS 255
@@ -172,6 +173,7 @@
 #define IDB_VIEW_ZOOMOUT                372
 #define IDB_FILE_NEW3                   373
 #define IDB_FILE_OPENCONFLICT           374
+#define IDB_FILE_COMPARE_PR             383
 #define IDB_PLUGINS_LIST                375
 #define IDB_MERGE_COMPARE               376
 #define IDB_MERGE_COMPARE_LEFT1_LEFT2   377
@@ -602,6 +604,10 @@
 #define IDC_COMPARETABLE_DSV_DELIM_CHAR 1409
 #define IDC_COMPARETABLE_ALLOWNEWLINE   1410
 #define IDC_COMPARETABLE_QUOTE_CHAR     1411
+#define IDC_PR_URL                      1780
+#define IDC_PR_TOKEN                    1781
+#define IDC_PR_REMEMBER_TOKEN           1782
+#define IDC_PR_CLEAR_TOKEN              1783
 #define IDC_OPTIONS                     1412
 #define IDC_SWAP01_STATIC               1413
 #define IDC_SWAP12_STATIC               1414
@@ -1054,6 +1060,7 @@
 #define ID_PROJECT_DIFF_OPTIONS_COMPMETHOD_SIZE 33140
 #define ID_PROJECT_DIFF_OPTIONS_COMPMETHOD_EXISTENCE 33141
 #define ID_FILE_OPENCLIPBOARD           33142
+#define ID_FILE_COMPARE_PR              38950
 #define ID_EDIT_TOGGLE_BOOKMARK         33145
 #define ID_EDIT_GOTO_NEXT_BOOKMARK      33146
 #define ID_EDIT_GOTO_PREV_BOOKMARK      33147

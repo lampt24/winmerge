@@ -546,6 +546,12 @@
     <ClCompile Include="OpenTableDlg.cpp">
       <Filter>MFCGui\Dialogs\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PullRequestDlg.cpp">
+      <Filter>MFCGui\Dialogs\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PullRequestCompare.cpp">
+      <Filter>MFCGui\Dialogs\Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="WildcardDropList.cpp">
       <Filter>MFCGui\PropertyPages\Source Files</Filter>
     </ClCompile>
@@ -1347,6 +1353,12 @@
       <Filter>MFCGui\PropertyPages\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OpenTableDlg.h">
+      <Filter>MFCGui\Dialogs\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PullRequestDlg.h">
+      <Filter>MFCGui\Dialogs\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PullRequestCompare.h">
       <Filter>MFCGui\Dialogs\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WildcardDropList.h">

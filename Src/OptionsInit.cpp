@@ -171,6 +171,9 @@ void Init(COptionsMgr *pOptions)
 
 	pOptions->InitOption(OPT_CMP_CSV_FILEPATTERNS, _T("*.csv"));
 	pOptions->InitOption(OPT_CMP_CSV_DELIM_CHAR, _T(","));
+	pOptions->InitOption(OPT_PR_LAST_URL, _T(""));
+	pOptions->InitOption(OPT_PR_TOKEN_GITHUB, _T(""));
+	pOptions->InitOption(OPT_PR_TOKEN_GITEA, _T(""));
 	pOptions->InitOption(OPT_CMP_TSV_FILEPATTERNS, _T("*.tsv"));
 	pOptions->InitOption(OPT_CMP_DSV_FILEPATTERNS, _T(""));
 	pOptions->InitOption(OPT_CMP_DSV_DELIM_CHAR, _T(";"));

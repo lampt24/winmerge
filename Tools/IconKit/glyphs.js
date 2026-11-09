@@ -304,6 +304,9 @@ const M = {
   'new3_image.bmp': () => stack3(mountain(7, 12)),
   'new3_webpage.bmp': () => stack3(globe(14, 17, 5.5)),
   'new_folder.bmp': () => folder(1, 4, 26, 22) + plusMark(24, 24, 5.5),
+  'compare_pr.bmp': () => line('M8 10v12', C.violet, 3) + circle(8, 7, 4, 'none', `stroke="${C.violet}" stroke-width="3"`) +
+    circle(8, 25, 4, 'none', `stroke="${C.violet}" stroke-width="3"`) + circle(24, 25, 4, 'none', `stroke="${C.green}" stroke-width="3"`) +
+    line('M24 21v-8a4 4 0 0 0-4-4h-4', C.green, 3) + poly('18,3 11,9 18,15', C.green),
   'mg_icons.bmp': null, // margin icons are generated separately
 };
 // Toolbar duplicates in the menu

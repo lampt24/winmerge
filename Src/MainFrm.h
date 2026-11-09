@@ -460,6 +460,7 @@ protected:
 	afx_msg void OnHelpReleasenotes();
 	afx_msg void OnHelpTranslations();
 	afx_msg void OnFileOpenConflict();
+	afx_msg void OnFileComparePullRequest();
 	afx_msg void OnFileOpenClipboard();
 	afx_msg void OnPluginsList();
 	afx_msg void OnUpdatePluginName(CCmdUI* pCmdUI);

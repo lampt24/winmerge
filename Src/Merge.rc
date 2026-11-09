@@ -428,6 +428,7 @@ BEGIN
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
         MENUITEM "Open Conflic&t File...",      ID_FILE_OPENCONFLICT
         MENUITEM "Open C&lipboard",             ID_FILE_OPENCLIPBOARD
+        MENUITEM "Compare &Pull Request...",    ID_FILE_COMPARE_PR
         MENUITEM SEPARATOR
         MENUITEM "Open Pro&ject...\tCtrl+J",    ID_FILE_OPENPROJECT
         MENUITEM "Sa&ve Project...",            ID_FILE_SAVEPROJECT
@@ -531,6 +532,7 @@ BEGIN
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
         MENUITEM "Open Conflic&t File...",      ID_FILE_OPENCONFLICT
         MENUITEM "Open C&lipboard",             ID_FILE_OPENCLIPBOARD
+        MENUITEM "Compare &Pull Request...",    ID_FILE_COMPARE_PR
         MENUITEM SEPARATOR
         MENUITEM "Open Pro&ject...\tCtrl+J",    ID_FILE_OPENPROJECT
         MENUITEM "Sa&ve Project...",            ID_FILE_SAVEPROJECT
@@ -708,6 +710,7 @@ BEGIN
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
         MENUITEM "Open Conflic&t File...",      ID_FILE_OPENCONFLICT
         MENUITEM "Open C&lipboard",             ID_FILE_OPENCLIPBOARD
+        MENUITEM "Compare &Pull Request...",    ID_FILE_COMPARE_PR
         MENUITEM SEPARATOR
         MENUITEM "Open Pro&ject...\tCtrl+J",    ID_FILE_OPENPROJECT
         MENUITEM "Sa&ve Project...",            ID_FILE_SAVEPROJECT
@@ -3300,6 +3303,23 @@ BEGIN
     EDITTEXT        IDC_COMPARETABLE_QUOTE_CHAR,6,142,30,14,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,93,154,66,18
     PUSHBUTTON      "Cancel",IDCANCEL,165,154,66,18
+END
+
+IDD_PULL_REQUEST DIALOGEX 0, 0, 309, 148
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Compare Pull Request"
+FONT 8, FONTNAME, 0, 0, 0x1
+BEGIN
+    LTEXT           "Pull request &URL (GitHub or Gitea):",IDC_STATIC,7,7,295,10
+    EDITTEXT        IDC_PR_URL,7,19,295,14,ES_AUTOHSCROLL
+    LTEXT           "Access &token (optional for public repositories):",IDC_STATIC,7,40,295,10
+    EDITTEXT        IDC_PR_TOKEN,7,52,295,14,ES_AUTOHSCROLL | ES_PASSWORD
+    CONTROL         "&Remember the token (encrypted for the current Windows user)",IDC_PR_REMEMBER_TOKEN,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,71,295,10
+    LTEXT           "Leave the token empty to use a saved token or the GITHUB_TOKEN / GITEA_TOKEN environment variable. Changed files are downloaded read-only into a temporary folder and compared as base and head.",IDC_STATIC,7,86,295,28
+    PUSHBUTTON      "&Forget Saved Tokens",IDC_PR_CLEAR_TOKEN,7,124,100,17
+    DEFPUSHBUTTON   "Compare",IDOK,166,124,66,17
+    PUSHBUTTON      "Cancel",IDCANCEL,236,124,66,17
 END
 
 IDD_PROPPAGE_BACKUPS DIALOGEX 0, 0, 325, 294

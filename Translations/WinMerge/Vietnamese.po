@@ -10199,3 +10199,34 @@ msgstr ""
 #: Strings.rc:344
 msgid "(pick a preset to fill in the field above)"
 msgstr ""
+
+msgid "Compare &Pull Request..."
+msgstr "So sánh &Pull Request..."
+
+msgid "Compare Pull Request"
+msgstr "So sánh Pull Request"
+
+msgid "Pull request &URL (GitHub or Gitea):"
+msgstr "&URL của pull request (GitHub hoặc Gitea):"
+
+msgid "Access &token (optional for public repositories):"
+msgstr "&Token truy cập (không bắt buộc với repository công khai):"
+
+msgid "&Remember the token (encrypted for the current Windows user)"
+msgstr "&Ghi nhớ token (mã hoá cho người dùng Windows hiện tại)"
+
+msgid "Leave the token empty to use a saved token or the GITHUB_TOKEN / GITEA_TOKEN environment variable. Changed files are downloaded read-only into a temporary folder and compared as base and head."
+msgstr "Để trống token để dùng token đã lưu hoặc biến môi trường GITHUB_TOKEN / GITEA_TOKEN. Các tệp thay đổi được tải về thư mục tạm ở chế độ chỉ đọc và so sánh giữa base và head."
+
+msgid "&Forget Saved Tokens"
+msgstr "&Xoá token đã lưu"
+
+msgid "Enter a pull request URL such as\nhttps://github.com/owner/repo/pull/123 (GitHub) or\nhttps://gitea.example.com/owner/repo/pulls/45 (Gitea)."
+msgstr "Nhập URL pull request, ví dụ\nhttps://github.com/owner/repo/pull/123 (GitHub) hoặc\nhttps://gitea.example.com/owner/repo/pulls/45 (Gitea)."
+
+msgid "This pull request has no changed files."
+msgstr "Pull request này không có tệp nào thay đổi."
+
+#, c-format
+msgid "%d file(s) could not be downloaded:"
+msgstr "Không tải được %d tệp:"
