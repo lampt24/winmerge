@@ -45,6 +45,15 @@ if "%PLATFORM%" == "ARM64" (
       goto :eof
     )
   )
+  rem Inno Setup 5 is not installed: fall back to Inno Setup 6 when an .is6.iss script exists
+  if exist "Installer\innosetup\WinMerge%PLATFORM%.is6.iss" (
+    for %%i in ("%LOCALAPPDATA%\Programs" "%ProgramFiles(x86)%" "%ProgramFiles%") do (
+      if exist "%%~i\Inno Setup 6\iscc.exe" (
+        "%%~i\Inno Setup 6\iscc.exe" /DTranslationsDir=..\..\Build\Translations "Installer\innosetup\WinMerge%PLATFORM%.is6.iss" || pause
+        goto :eof
+      )
+    )
+  )
 )
 
 goto :eof
