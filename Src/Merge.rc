@@ -5473,9 +5473,9 @@ END
 // EOL types shown in folder compare EOL type column and in file compare status bar
 STRINGTABLE
 BEGIN
-    IDS_EOL_DOS             "Win"
-    IDS_EOL_MAC             "Mac"
-    IDS_EOL_UNIX            "Unix"
+    IDS_EOL_DOS             "CRLF"
+    IDS_EOL_MAC             "CR"
+    IDS_EOL_UNIX            "LF"
     IDS_EOL_MIXED           "Mixed"
     IDS_EOL_BIN             NC_("EOL Type", "Binary")
     IDS_EOL_LF              "LF"

@@ -5321,9 +5321,34 @@ OnUpdateIndicatorCRLF (CCmdUI * pCmdUI)
           pCmdUI->Enable (true);
           break;
         case CRLFSTYLE::MIXED:
-          eol = LoadResString (IDS_EOL_MIXED);
-          pCmdUI->SetText (eol.c_str());
-          pCmdUI->Enable (true);
+          {
+            // Name the line-break sequences actually present (e.g. "CRLF+LF")
+            // instead of a generic "Mixed"; stop as soon as all three are found.
+            bool bCRLF = false, bLF = false, bCR = false;
+            const int nLineCount = m_pTextBuffer->GetLineCount ();
+            for (int nLine = 0; nLine < nLineCount && !(bCRLF && bLF && bCR); ++nLine)
+              {
+                const tchar_t* pszEol = m_pTextBuffer->GetLineEol (nLine);
+                if (pszEol == nullptr || pszEol[0] == 0)
+                  continue;
+                if (pszEol[0] == '\r' && pszEol[1] == '\n')
+                  bCRLF = true;
+                else if (pszEol[0] == '\n')
+                  bLF = true;
+                else if (pszEol[0] == '\r')
+                  bCR = true;
+              }
+            if (bCRLF)
+              eol += _T("CRLF");
+            if (bLF)
+              eol += eol.empty () ? _T("LF") : _T("+LF");
+            if (bCR)
+              eol += eol.empty () ? _T("CR") : _T("+CR");
+            if (eol.empty ())
+              eol = LoadResString (IDS_EOL_MIXED);
+            pCmdUI->SetText (eol.c_str());
+            pCmdUI->Enable (true);
+          }
           break;
         default:
           pCmdUI->SetText (nullptr);
