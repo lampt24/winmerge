@@ -42,6 +42,10 @@ jobs:
         done
         ls -la build/WinMergeDownloadDeps
 
+    - name: Install Inno Setup (not preinstalled on current Windows runner images)
+      run: |
+        if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\iscc.exe") -and -not (Test-Path "$env:ProgramFiles\Inno Setup 6\iscc.exe")) { choco install innosetup -y --no-progress }
+
     - name: Build
       run: |
         .\DownloadDeps.cmd
