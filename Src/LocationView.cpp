@@ -162,20 +162,63 @@ static bool IsColorDark(COLORREF clrBackground)
 
 }
 
+/** @brief Mix two colors; ratio is the weight of @p a (0..1). */
+static COLORREF BlendColor(COLORREF a, COLORREF b, float ratio)
+{
+	auto mix = [ratio](int x, int y) { return static_cast<BYTE>(std::clamp(static_cast<int>(x * ratio + y * (1.f - ratio) + 0.5f), 0, 255)); };
+	return RGB(mix(GetRValue(a), GetRValue(b)), mix(GetGValue(a), GetGValue(b)), mix(GetBValue(a), GetBValue(b)));
+}
+
+/** @brief Fluent accent (same palette as the tab indicator and QuadPane). */
+static COLORREF GetAccentColor(COLORREF background)
+{
+	return IsColorDark(background) ? RGB(0x4C, 0xC2, 0xFF) : RGB(0x00, 0x67, 0xC0);
+}
+
+/** @brief Anti-aliased rounded rectangle; pass CLR_NONE to skip the fill or the border. */
+static void DrawRoundRect(CDC* pDC, const CRect& r, int radius, COLORREF fill, COLORREF border)
+{
+	if (r.Width() <= 0 || r.Height() <= 0)
+		return;
+	Gdiplus::Graphics graphics(pDC->GetSafeHdc());
+	graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+	graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
+	const Gdiplus::REAL x = static_cast<Gdiplus::REAL>(r.left), y = static_cast<Gdiplus::REAL>(r.top);
+	const Gdiplus::REAL w = static_cast<Gdiplus::REAL>(r.Width()), h = static_cast<Gdiplus::REAL>(r.Height());
+	const Gdiplus::REAL d = static_cast<Gdiplus::REAL>((std::min)({ radius * 2, r.Width(), r.Height() }));
+	Gdiplus::GraphicsPath path;
+	if (d < 1.f)
+		path.AddRectangle(Gdiplus::RectF(x, y, w, h));
+	else
+	{
+		path.AddArc(x, y, d, d, 180, 90);
+		path.AddArc(x + w - d, y, d, d, 270, 90);
+		path.AddArc(x + w - d, y + h - d, d, d, 0, 90);
+		path.AddArc(x, y + h - d, d, d, 90, 90);
+		path.CloseFigure();
+	}
+	if (fill != CLR_NONE)
+	{
+		Gdiplus::SolidBrush brush(Gdiplus::Color(255, GetRValue(fill), GetGValue(fill), GetBValue(fill)));
+		graphics.FillPath(&brush, &path);
+	}
+	if (border != CLR_NONE)
+	{
+		Gdiplus::Pen pen(Gdiplus::Color(255, GetRValue(border), GetGValue(border), GetBValue(border)), 1.f);
+		pen.SetAlignment(Gdiplus::PenAlignmentInset);
+		graphics.DrawPath(&pen, &path);
+	}
+}
+
+/** @brief Neutral surface slightly offset from the editor background (no blue tint). */
 COLORREF CLocationView::GetBackgroundColor()
 {
 	COLORREF clrBackground = GetDocument()->GetView(0, 0)->GetColor(COLORINDEX_WHITESPACE);
-	if (!IsColorDark(clrBackground))
-	{
-		return RGB(
-			(std::max)(GetRValue(clrBackground) - 24, 0),
-			(std::max)(GetGValue(clrBackground) - 24, 0),
-			(std::max)(GetBValue(clrBackground) - 12, 0));
-	}
+	const int delta = IsColorDark(clrBackground) ? 14 : -12;
 	return RGB(
-		(std::min)(GetRValue(clrBackground) + 20, 255),
-		(std::min)(GetGValue(clrBackground) + 20, 255),
-		(std::min)(GetBValue(clrBackground) + 32, 255));
+		std::clamp(GetRValue(clrBackground) + delta, 0, 255),
+		std::clamp(GetGValue(clrBackground) + delta, 0, 255),
+		std::clamp(GetBValue(clrBackground) + delta, 0, 255));
 }
 
 /**
@@ -376,35 +419,18 @@ void CLocationView::OnDraw(CDC* pDC)
 	CalculateBars();
 	DrawBackground(&dc);
 
-	COLORREF clrFace    = GetBackgroundColor();
-	COLORREF clrShadow  = GetSysColor(COLOR_BTNSHADOW);
-	COLORREF clrShadow2 = CEColor::GetIntermediateColor(clrFace, clrShadow, 0.9f);
-	COLORREF clrShadow3 = CEColor::GetIntermediateColor(clrFace, clrShadow2, 0.5f);
-	COLORREF clrShadow4 = CEColor::GetIntermediateColor(clrFace, clrShadow3, 0.5f);
-	COLORREF clrShadow5 = CEColor::GetIntermediateColor(clrFace, clrShadow4, 0.5f);
-
-	// Draw bar outlines
-	CPen* oldObj = (CPen*)dc.SelectStockObject(NULL_PEN);
-	CBrush brush(pDoc->GetView(nGroup, 0)->GetColor(COLORINDEX_WHITESPACE));
-	CBrush* oldBrush = (CBrush*)dc.SelectObject(&brush);
+	// Flat Fluent-style lanes: editor-colored rounded bars with a hairline border.
+	// A pane edited after the last rescan shows only its outline.
+	const COLORREF clrFace = GetBackgroundColor();
+	const COLORREF clrLane = pDoc->GetView(nGroup, 0)->GetColor(COLORINDEX_WHITESPACE);
+	const COLORREF clrLaneBorder = BlendColor(pDoc->GetView(nGroup, 0)->GetColor(COLORINDEX_NORMALTEXT), clrFace, 0.16f);
+	const int laneRadius = MulDiv(3, dc.GetDeviceCaps(LOGPIXELSX), 96);
 	for (int pane = 0; pane < pDoc->m_nBuffers; pane++)
 	{
-		CBrush *pOldBrush = nullptr;
-		if (pDoc->IsEditedAfterRescan(pane))
-			pOldBrush = (CBrush *)dc.SelectStockObject(HOLLOW_BRUSH);
-		dc.Rectangle(m_bar[pane]);
-		if (pOldBrush != nullptr)
-			dc.SelectObject(pOldBrush);
-
 		CRect rect = m_bar[pane];
 		rect.InflateRect(1, 1);
-		dc.Draw3dRect(rect, clrShadow5, clrShadow4);
-		rect.InflateRect(-1, -1);
-		dc.Draw3dRect(rect, clrShadow3, clrShadow2);
+		DrawRoundRect(&dc, rect, laneRadius, pDoc->IsEditedAfterRescan(pane) ? CLR_NONE : clrLane, clrLaneBorder);
 	}
-	dc.SelectObject(oldBrush);
-	dc.SelectObject(oldBrush);
-	dc.SelectObject(oldObj);
 
 	// Iterate the differences list and draw differences as colored blocks.
 
@@ -437,12 +463,13 @@ void CLocationView::OnDraw(CDC* pDC)
 				if (pDoc->m_nBuffers == 3 && pane < 2)
 				{
 					CRect r(m_bar[pane].right - 1, (*iter).top_coord, m_bar[pane + 1].left + 1, (*iter).bottom_coord);
+					// Same status palette as the icon set: amber, teal and red, softened toward the surface.
 					if ((pane == 0 && (*iter).op == OP_3RDONLY) || (pane == 1 && (*iter).op == OP_1STONLY))
-						DrawRect(&dc, r, RGB(255, 255, 127), false);
+						DrawRect(&dc, r, BlendColor(RGB(0xF5, 0xB4, 0x00), clrFace, 0.7f), false);
 					else if ((*iter).op == OP_2NDONLY)
-						DrawRect(&dc, r, RGB(127, 255, 255), false);
+						DrawRect(&dc, r, BlendColor(RGB(0x12, 0xA3, 0x9A), clrFace, 0.7f), false);
 					else if ((*iter).op == OP_DIFF)
-						DrawRect(&dc, r, RGB(255, 0, 0), false);
+						DrawRect(&dc, r, BlendColor(RGB(0xE5, 0x48, 0x4D), clrFace, 0.8f), false);
 				}
 				// Draw block
 				pDoc->GetView(0, pane)->GetLineColors2((*iter).top_line, 0, cr[pane], crt, bwh);
@@ -538,10 +565,6 @@ void CLocationView::DrawRect(CDC* pDC, const CRect& r, COLORREF cr, bool bSelect
 		if (drawRect.Height() < 1)
 			++drawRect.bottom;
 		pDC->FillSolidRect(drawRect, cr);
-		CRect drawRect2(drawRect.left, drawRect.top, drawRect.right, drawRect.top + 1);
-		pDC->FillSolidRect(drawRect2, CEColor::GetDarkenColor(cr, 0.96f));
-		CRect drawRect3(drawRect.left, drawRect.bottom - 1, drawRect.right, drawRect.bottom);
-		pDC->FillSolidRect(drawRect3, CEColor::GetDarkenColor(cr, 0.91f));
 
 		if (bSelected)
 		{
@@ -1083,30 +1106,16 @@ void CLocationView::OnSize(UINT nType, int cx, int cy)
  */
 void CLocationView::DrawDiffMarker(CDC* pDC, int yCoord)
 {
-	int nBuffers = GetDocument()->m_nBuffers;
-
-	CPoint points[3];
-	points[0].x = m_bar[0].left - DIFFMARKER_WIDTH - 1;
-	points[0].y = yCoord - DIFFMARKER_TOP;
-	points[1].x = m_bar[0].left - 1;
-	points[1].y = yCoord;
-	points[2].x = m_bar[0].left - DIFFMARKER_WIDTH - 1;
-	points[2].y = yCoord + DIFFMARKER_BOTTOM;
-
-	COLORREF clrBlue = GetSysColor(COLOR_ACTIVECAPTION);
-	CPen penDarkBlue(PS_SOLID, 0, CEColor::GetDarkenColor(clrBlue, 0.9f));
-	CPen* oldObj = (CPen*)pDC->SelectObject(&penDarkBlue);
-	CBrush brushBlue(clrBlue);
-	CBrush* pOldBrush = pDC->SelectObject(&brushBlue);
-
-	pDC->SetPolyFillMode(WINDING);
-	pDC->Polygon(points, 3);
-
-	points[0].x = m_bar[nBuffers - 1].right + 1 + DIFFMARKER_WIDTH;
-	points[1].x = m_bar[nBuffers - 1].right + 1;
-	points[2].x = m_bar[nBuffers - 1].right + 1 + DIFFMARKER_WIDTH;
-	pDC->Polygon(points, 3);
-
-	pDC->SelectObject(pOldBrush);
-	pDC->SelectObject(oldObj);
+	// Fluent accent pills on both sides of the lanes instead of the old triangles.
+	const int nBuffers = GetDocument()->m_nBuffers;
+	const int lpx = pDC->GetDeviceCaps(LOGPIXELSX);
+	const int width = (std::max)(3, MulDiv(DIFFMARKER_WIDTH / 2, lpx, 96));
+	const int gap = (std::max)(2, MulDiv(2, lpx, 96));
+	const int top = yCoord - MulDiv(DIFFMARKER_TOP, lpx, 96);
+	const int bottom = yCoord + MulDiv(DIFFMARKER_BOTTOM, lpx, 96) + 1;
+	const COLORREF clrAccent = GetAccentColor(GetBackgroundColor());
+	const CRect rcLeft(m_bar[0].left - 1 - gap - width, top, m_bar[0].left - 1 - gap, bottom);
+	const CRect rcRight(m_bar[nBuffers - 1].right + 1 + gap, top, m_bar[nBuffers - 1].right + 1 + gap + width, bottom);
+	DrawRoundRect(pDC, rcLeft, width / 2, clrAccent, CLR_NONE);
+	DrawRoundRect(pDC, rcRight, width / 2, clrAccent, CLR_NONE);
 }

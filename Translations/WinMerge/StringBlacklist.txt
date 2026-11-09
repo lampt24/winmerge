@@ -75,6 +75,9 @@ LF
 CR
 CRLF
 &Windows (CRLF)
+&CRLF (Windows)
+&LF (Unix)
+C&R (Mac)
 &Unix (LF)
 &Mac (CR)
 &1

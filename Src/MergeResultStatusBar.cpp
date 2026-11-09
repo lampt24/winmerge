@@ -49,11 +49,11 @@ static UINT indicatorsResult[] =
 static String ResultEolString(const String& sEol)
 {
 	if (sEol == _T("\r\n"))
-		return _T("Win");
+		return _T("CRLF");
 	if (sEol == _T("\n"))
-		return _T("Unix");
+		return _T("LF");
 	if (sEol == _T("\r"))
-		return _T("Mac");
+		return _T("CR");
 	if (sEol.empty())
 		return _("None");
 	if (sEol == _T("hidden"))

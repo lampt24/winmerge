@@ -799,27 +799,21 @@ static String GetEOLType(const CDiffContext *, const void *p, int index)
 		return I18n::tr("EOL Type", "Binary");
 	}
 
-	char *id = 0;
-	if (stats.ncrlfs > 0 && stats.ncrs == 0 && stats.nlfs == 0)
+	// Show the actual line-break sequences (CRLF, LF, CR). Mixed files list every
+	// kind present, e.g. "CRLF+LF", instead of the OS names Win/Unix/Mac.
+	String result;
+	auto append = [&result](int count, const tchar_t* name)
 	{
-		id = N_("Win");
-	}
-	else if (stats.ncrlfs == 0 && stats.ncrs > 0 && stats.nlfs == 0)
-	{
-		id = N_("Mac");
-	}
-	else if (stats.ncrlfs == 0 && stats.ncrs == 0 && stats.nlfs > 0)
-	{
-		id = N_("Unix");
-	}
-	else
-	{
-		return strutils::format(_T("%s:%d/%d/%d"),
-			_("Mixed"),
-			stats.ncrlfs, stats.ncrs, stats.nlfs);
-	}
-	
-	return I18n::tr(id);
+		if (count == 0)
+			return;
+		if (!result.empty())
+			result += _T("+");
+		result += name;
+	};
+	append(stats.ncrlfs, _T("CRLF"));
+	append(stats.nlfs, _T("LF"));
+	append(stats.ncrs, _T("CR"));
+	return result;
 }
 
 /**

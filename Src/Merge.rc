@@ -741,9 +741,9 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "&Convert Line Endings to"
         BEGIN
-            MENUITEM "&Windows (CRLF)",             ID_EOL_TO_DOS
-            MENUITEM "&Unix (LF)",                  ID_EOL_TO_UNIX
-            MENUITEM "&Mac (CR)",                   ID_EOL_TO_MAC
+            MENUITEM "&CRLF (Windows)",             ID_EOL_TO_DOS
+            MENUITEM "&LF (Unix)",                  ID_EOL_TO_UNIX
+            MENUITEM "C&R (Mac)",                   ID_EOL_TO_MAC
         END
         MENUITEM SEPARATOR
         MENUITEM "Mer&ge Mode\tF9",             ID_FILE_MERGINGMODE
@@ -1342,9 +1342,9 @@ IDR_POPUP_MERGEEDITFRAME_STATUSBAR_EOL MENU
 BEGIN
     POPUP "_POPUP_"
     BEGIN
-        MENUITEM "&Windows (CRLF)",             ID_EOL_TO_DOS
-        MENUITEM "&Unix (LF)",                  ID_EOL_TO_UNIX
-        MENUITEM "&Mac (CR)",                   ID_EOL_TO_MAC
+        MENUITEM "&CRLF (Windows)",             ID_EOL_TO_DOS
+        MENUITEM "&LF (Unix)",                  ID_EOL_TO_UNIX
+        MENUITEM "C&R (Mac)",                   ID_EOL_TO_MAC
     END
 END
 
@@ -1756,9 +1756,9 @@ IDR_POPUP_FILTERMENU_EOL MENU
 BEGIN
     POPUP "_POPUP_"
     BEGIN
-        MENUITEM "&Windows (CRLF)",             ID_FILTERMENU_EOL_CRLF
-        MENUITEM "&Unix (LF)",                  ID_FILTERMENU_EOL_LF
-        MENUITEM "&Mac (CR)",                   ID_FILTERMENU_EOL_CR
+        MENUITEM "&CRLF (Windows)",             ID_FILTERMENU_EOL_CRLF
+        MENUITEM "&LF (Unix)",                  ID_FILTERMENU_EOL_LF
+        MENUITEM "C&R (Mac)",                   ID_FILTERMENU_EOL_CR
         MENUITEM "None",                        ID_FILTERMENU_EOL_NONE
         MENUITEM "Mixed",                       ID_FILTERMENU_EOL_MIXED
     END
@@ -2007,9 +2007,9 @@ BEGIN
             END
             POPUP "&EOL"
             BEGIN
-                MENUITEM "&Windows (CRLF)",             ID_FILTERMENU_EOL_CRLF
-                MENUITEM "&Unix (LF)",                  ID_FILTERMENU_EOL_LF
-                MENUITEM "&Mac (CR)",                   ID_FILTERMENU_EOL_CR
+                MENUITEM "&CRLF (Windows)",             ID_FILTERMENU_EOL_CRLF
+                MENUITEM "&LF (Unix)",                  ID_FILTERMENU_EOL_LF
+                MENUITEM "C&R (Mac)",                   ID_FILTERMENU_EOL_CR
                 MENUITEM "None",                        ID_FILTERMENU_EOL_NONE
             END
         END
