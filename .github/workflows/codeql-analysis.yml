@@ -2,6 +2,7 @@ name: CodeQL Analysis
 
 on:
   push:
+    branches: [ master ]
   pull_request:
   schedule:
     - cron: '0 8 * * *'
@@ -13,6 +14,9 @@ jobs:
     steps:
       - name: Configure Git for long paths
         run: git config --global core.longpaths true
+
+      - name: Point relative submodules at the upstream WinMerge organization (needed on forks)
+        run: git config --global url."https://github.com/WinMerge/winmerge-manual".insteadOf "https://github.com/${{ github.repository_owner }}/winmerge-manual"
 
       - name: Checkout repository
         id: checkout_repo
@@ -27,6 +31,17 @@ jobs:
           languages: cpp
           queries: security-and-quality
           config-file: ./.github/codeql/codeql-config.yml
+
+      - name: Pre-download msys2 packages (mirror.msys2.org often rejects the PowerShell downloads in DownloadDeps.cmd)
+        shell: bash
+        run: |
+          mkdir -p build/WinMergeDownloadDeps
+          for u in $(grep -oE 'https://mirror\.msys2\.org/[^!]+' DownloadDeps.cmd); do
+            f="build/WinMergeDownloadDeps/$(basename "$u")"
+            [ -s "$f" ] && continue
+            curl -fsSL --retry 5 --retry-delay 3 -o "$f" "$u" ||
+              curl -fsSL --retry 5 --retry-delay 3 -o "$f" "${u/mirror.msys2.org/repo.msys2.org}"
+          done
 
       - name: Build project
         id: build_project
