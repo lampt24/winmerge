@@ -12,32 +12,33 @@ namespace Options { namespace DiffColors {
 
 void Init(COptionsMgr *pOptionsMgr)
 {
-	pOptionsMgr->InitOption(OPT_CLR_DIFF, (int)CEColor(239,203,5));
-	pOptionsMgr->InitOption(OPT_CLR_DIFF_DELETED, (int)CEColor(192, 192, 192));
+	// Defaults match ColorSchemes/Fluent Light.ini
+	pOptionsMgr->InitOption(OPT_CLR_DIFF, (int)CEColor(255, 241, 194));
+	pOptionsMgr->InitOption(OPT_CLR_DIFF_DELETED, (int)CEColor(232, 232, 232));
 	pOptionsMgr->InitOption(OPT_CLR_DIFF_TEXT, (int)CEColor(0,0,0));
-	pOptionsMgr->InitOption(OPT_CLR_SELECTED_DIFF, (int)CEColor(239,119,116));
-	pOptionsMgr->InitOption(OPT_CLR_SELECTED_DIFF_DELETED, (int)CEColor(240, 192, 192));
+	pOptionsMgr->InitOption(OPT_CLR_SELECTED_DIFF, (int)CEColor(207, 228, 250));
+	pOptionsMgr->InitOption(OPT_CLR_SELECTED_DIFF_DELETED, (int)CEColor(224, 232, 242));
 	pOptionsMgr->InitOption(OPT_CLR_SELECTED_DIFF_TEXT, (int)CEColor(0,0,0));
-	pOptionsMgr->InitOption(OPT_CLR_TRIVIAL_DIFF, (int)CEColor(251,242,191));
-	pOptionsMgr->InitOption(OPT_CLR_TRIVIAL_DIFF_DELETED, (int)CEColor(233,233,233));
+	pOptionsMgr->InitOption(OPT_CLR_TRIVIAL_DIFF, (int)CEColor(250, 246, 230));
+	pOptionsMgr->InitOption(OPT_CLR_TRIVIAL_DIFF_DELETED, (int)CEColor(240, 240, 240));
 	pOptionsMgr->InitOption(OPT_CLR_TRIVIAL_DIFF_TEXT, (int)CEColor(0,0,0));
-	pOptionsMgr->InitOption(OPT_CLR_MOVEDBLOCK, (int)CEColor(228,155,82));
-	pOptionsMgr->InitOption(OPT_CLR_MOVEDBLOCK_DELETED, (int)CEColor(192, 192, 192));
+	pOptionsMgr->InitOption(OPT_CLR_MOVEDBLOCK, (int)CEColor(226, 217, 252));
+	pOptionsMgr->InitOption(OPT_CLR_MOVEDBLOCK_DELETED, (int)CEColor(232, 232, 232));
 	pOptionsMgr->InitOption(OPT_CLR_MOVEDBLOCK_TEXT, (int)CEColor(0,0,0));
-	pOptionsMgr->InitOption(OPT_CLR_SELECTED_MOVEDBLOCK, (int)CEColor(248,112,78));
-	pOptionsMgr->InitOption(OPT_CLR_SELECTED_MOVEDBLOCK_DELETED, (int)CEColor(252, 181, 163));
+	pOptionsMgr->InitOption(OPT_CLR_SELECTED_MOVEDBLOCK, (int)CEColor(199, 183, 247));
+	pOptionsMgr->InitOption(OPT_CLR_SELECTED_MOVEDBLOCK_DELETED, (int)CEColor(222, 214, 246));
 	pOptionsMgr->InitOption(OPT_CLR_SELECTED_MOVEDBLOCK_TEXT, (int)CEColor(0,0,0));
-	pOptionsMgr->InitOption(OPT_CLR_SNP, (int)CEColor(251,250,223));
-	pOptionsMgr->InitOption(OPT_CLR_SNP_DELETED, (int)CEColor(233, 233, 233));
+	pOptionsMgr->InitOption(OPT_CLR_SNP, (int)CEColor(219, 242, 238));
+	pOptionsMgr->InitOption(OPT_CLR_SNP_DELETED, (int)CEColor(236, 240, 239));
 	pOptionsMgr->InitOption(OPT_CLR_SNP_TEXT, (int)CEColor(0,0,0));
-	pOptionsMgr->InitOption(OPT_CLR_SELECTED_SNP, (int)CEColor(239,183,180));
-	pOptionsMgr->InitOption(OPT_CLR_SELECTED_SNP_DELETED, (int)CEColor(240, 224, 224));
+	pOptionsMgr->InitOption(OPT_CLR_SELECTED_SNP, (int)CEColor(186, 228, 220));
+	pOptionsMgr->InitOption(OPT_CLR_SELECTED_SNP_DELETED, (int)CEColor(220, 236, 232));
 	pOptionsMgr->InitOption(OPT_CLR_SELECTED_SNP_TEXT, (int)CEColor(0,0,0));
-	pOptionsMgr->InitOption(OPT_CLR_WORDDIFF, (int)CEColor(241,226,173));
-	pOptionsMgr->InitOption(OPT_CLR_WORDDIFF_DELETED, (int)CEColor(255,170,130));
+	pOptionsMgr->InitOption(OPT_CLR_WORDDIFF, (int)CEColor(255, 214, 102));
+	pOptionsMgr->InitOption(OPT_CLR_WORDDIFF_DELETED, (int)CEColor(250, 200, 170));
 	pOptionsMgr->InitOption(OPT_CLR_WORDDIFF_TEXT, (int)CEColor(0,0,0));
-	pOptionsMgr->InitOption(OPT_CLR_SELECTED_WORDDIFF, (int)CEColor(255,160,160));
-	pOptionsMgr->InitOption(OPT_CLR_SELECTED_WORDDIFF_DELETED, (int)CEColor(200,129,108));
+	pOptionsMgr->InitOption(OPT_CLR_SELECTED_WORDDIFF, (int)CEColor(140, 190, 245));
+	pOptionsMgr->InitOption(OPT_CLR_SELECTED_WORDDIFF_DELETED, (int)CEColor(170, 195, 230));
 	pOptionsMgr->InitOption(OPT_CLR_SELECTED_WORDDIFF_TEXT, (int)CEColor(0,0,0));
 	pOptionsMgr->InitOption(OPT_CLR_DEFAULT_TEXT_COLORING, true);
 }

@@ -191,9 +191,9 @@ void PropColorSchemes::OnDeleteCurrentScheme()
 	}
 	ReloadColorSchemes();
 	if (WinMergeDarkMode::GetEffectiveColorMode(m_nColorMode) == 0)
-		m_sColorScheme = _T("Default");
+		m_sColorScheme = _T("Fluent Light");
 	else
-		m_sColorSchemeDark = _T("VS Dark");
+		m_sColorSchemeDark = _T("Fluent Dark");
 	UpdateData(FALSE);
 	WriteOptions();
 	UpdateControls();

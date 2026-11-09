@@ -206,8 +206,8 @@ namespace
 		{ OPT_AUTO_RELOAD_MODIFIED_FILES, varprop::VT_INT, {0, 2}, {}},
 		//
 		{ OPT_DIRCLR_USE_COLORS, varprop::VT_BOOL, {}, {}},
-		{ OPT_COLOR_SCHEME, varprop::VT_STRING, {}, {L"", L"Default", L"Modern", L"Solarized Dark", L"Solarized Light"}},
-		{ OPT_COLOR_SCHEME_DARK, varprop::VT_STRING, {}, {L"", L"Default", L"Modern", L"Solarized Dark", L"Solarized Light"}},
+		{ OPT_COLOR_SCHEME, varprop::VT_STRING, {}, {L"", L"Default", L"Fluent Light", L"Fluent Dark", L"Modern", L"Solarized Dark", L"Solarized Light"}},
+		{ OPT_COLOR_SCHEME_DARK, varprop::VT_STRING, {}, {L"", L"Default", L"Fluent Light", L"Fluent Dark", L"Modern", L"Solarized Dark", L"Solarized Light"}},
 		// Compare options
 		{ OPT_CMP_IGNORE_WHITESPACE, varprop::VT_INT, {0, 1, 2}, {}},
 		{ OPT_CMP_IGNORE_BLANKLINES, varprop::VT_BOOL, {}, {}},

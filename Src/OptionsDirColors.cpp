@@ -17,11 +17,11 @@ void Init(COptionsMgr *pOptionsMgr)
 	int defaultTextColor = static_cast<int>(GetSysColor(COLOR_WINDOWTEXT));
 	pOptionsMgr->InitOption(OPT_DIRCLR_ITEM_EQUAL, (int)GetSysColor(COLOR_WINDOW));
 	pOptionsMgr->InitOption(OPT_DIRCLR_ITEM_EQUAL_TEXT, defaultTextColor);
-	pOptionsMgr->InitOption(OPT_DIRCLR_ITEM_DIFF, (int)CEColor(240,222,125));
+	pOptionsMgr->InitOption(OPT_DIRCLR_ITEM_DIFF, (int)CEColor(255, 241, 194));
 	pOptionsMgr->InitOption(OPT_DIRCLR_ITEM_DIFF_TEXT, defaultTextColor);
-	pOptionsMgr->InitOption(OPT_DIRCLR_ITEM_NOT_EXIST_ALL, (int)CEColor(221,221,221));
+	pOptionsMgr->InitOption(OPT_DIRCLR_ITEM_NOT_EXIST_ALL, (int)CEColor(232, 232, 232));
 	pOptionsMgr->InitOption(OPT_DIRCLR_ITEM_NOT_EXIST_ALL_TEXT, defaultTextColor);
-	pOptionsMgr->InitOption(OPT_DIRCLR_ITEM_FILTERED, (int)CEColor(250,245,215));
+	pOptionsMgr->InitOption(OPT_DIRCLR_ITEM_FILTERED, (int)CEColor(235, 243, 251));
 	pOptionsMgr->InitOption(OPT_DIRCLR_ITEM_FILTERED_TEXT, defaultTextColor);
 	pOptionsMgr->InitOption(OPT_DIRCLR_MARGIN, (int)GetSysColor(COLOR_WINDOW));
 	pOptionsMgr->InitOption(OPT_DIRCLR_USE_COLORS, true);

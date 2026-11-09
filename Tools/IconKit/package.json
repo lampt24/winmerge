@@ -1,0 +1,11 @@
+{
+  "name": "winmerge-iconkit",
+  "private": true,
+  "description": "Generates the WinMerge Fluent icon set and branding bitmaps from vector sources",
+  "scripts": { "generate": "node generate.js --preview preview.png" },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "jpeg-js": "^0.4.4",
+    "pngjs": "^7.0.0"
+  }
+}
