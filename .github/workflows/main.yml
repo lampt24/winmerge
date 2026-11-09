@@ -17,6 +17,9 @@ jobs:
     - name: Configure Git for long paths
       run: git config --global core.longpaths true
 
+    - name: Point relative submodules at the upstream WinMerge organization (needed on forks)
+      run: git config --global url."https://github.com/WinMerge/winmerge-manual".insteadOf "https://github.com/${{ github.repository_owner }}/winmerge-manual"
+
     - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
